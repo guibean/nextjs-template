@@ -14,7 +14,8 @@
       "!**/coverage",
       "!**/public",
       "!**/pnpm-lock.yaml",
-      "!**/.opencode"
+      "!**/.opencode",
+      "!**/.agents"
     ]
   },
   "formatter": {

@@ -146,9 +146,20 @@ O registry `@aceternity` já está em `components.json`. Componentes Aceternity 
 ## Para agentes
 
 - `AGENTS.md`: regra de decisão entre site e sistema, comandos e restrições.
+- `opencode.json`: MCP oficial do shadcn para buscar e instalar componentes.
+- `.agents/skills/shadcn/`: skill oficial do shadcn.
 - `.opencode/skills/site-estatico/`: fluxo para criar e evoluir sites.
 - `.opencode/skills/sistema-fullstack/`: encaminha pedidos com back-end.
 - `components.json`: contexto de componentes e registry.
+
+Para usar as skills em qualquer projeto, copie-as para o diretório global:
+
+```powershell
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.config\opencode\skills" | Out-Null
+Copy-Item -Recurse .opencode\skills\* "$env:USERPROFILE\.config\opencode\skills\"
+```
+
+Depois chame com `@site-estatico` ou `@sistema-fullstack`. Mantenha o `AGENTS.md` no projeto para que a decisão de perfil viaje com o código.
 
 ## Qualidade
 
