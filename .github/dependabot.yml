@@ -1,26 +1,40 @@
 version: 2
+
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: daily
-
-    allow:
-      - dependency-name: next
-      - dependency-name: react
-      - dependency-name: react-dom
-      - dependency-name: "@types/react"
-      - dependency-name: "@types/react-dom"
-
-    ignore:
-      - dependency-name: "*"
-        update-types:
-          - version-update:semver-major
-
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
     groups:
-      react:
+      next-react:
         patterns:
+          - next
           - react
           - react-dom
           - "@types/react"
           - "@types/react-dom"
+          - eslint-config-next
+      tailwind:
+        patterns:
+          - tailwindcss
+          - "@tailwindcss/*"
+          - tw-animate-css
+      tooling:
+        patterns:
+          - "@biomejs/*"
+          - typescript
+          - "@types/node"
+      components:
+        patterns:
+          - "@base-ui/*"
+          - radix-ui
+          - "lucide-react"
+          - class-variance-authority
+          - cn
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
