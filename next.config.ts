@@ -1,16 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  webpack: (config) => {
-    if (process.env.NODE_ENV === "development") {
-      config.module.rules.push({
-        test: /\.(jsx|tsx)$/,
-        exclude: /node_modules/,
-        enforce: "pre",
-        use: "@dyad-sh/nextjs-webpack-component-tagger",
-      });
-    }
-    return config;
+  output: "export",
+  trailingSlash: true,
+  poweredByHeader: false,
+  reactStrictMode: true,
+  images: {
+    // O export estático não tem o otimizador do Next.
+    // Rode `pnpm images` para gerar AVIF/WebP antes do build.
+    unoptimized: true,
   },
 };
 
