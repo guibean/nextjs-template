@@ -21,7 +21,7 @@ const features = [
     icon: Gauge,
     title: "Performance por padrão",
     description:
-      "HTML estático, JavaScript mínimo e imagens preparadas para carregar rápido em qualquer conexão.",
+      "Renderização no servidor, cache e imagens otimizadas para carregar rápido em qualquer conexão.",
   },
   {
     icon: Search,
@@ -40,41 +40,41 @@ const features = [
 const steps = [
   {
     number: "01",
-    title: "Defina o objetivo",
-    description: "Uma página objetiva, com uma mensagem clara e um único próximo passo.",
+    title: "Modele os dados",
+    description: "Tabelas, relações, permissões e ameaças definidas antes de instalar mais código.",
   },
   {
     number: "02",
-    title: "Construa a base",
-    description: "Componentes acessíveis, conteúdo real e as fundações de SEO no lugar certo.",
+    title: "Proteja o acesso",
+    description: "Sessão validada no servidor, validação de entrada e segredos fora do cliente.",
   },
   {
     number: "03",
     title: "Meça e refine",
-    description: "Core Web Vitals, Lighthouse e dados de uso para melhorar o que importa.",
+    description: "Core Web Vitals, Lighthouse e logs para melhorar o que importa.",
   },
 ];
 
 const faqs = [
   {
-    question: "O site é realmente estático?",
+    question: "O que vem pronto neste template?",
     answer:
-      "Sim. As páginas são geradas no build e publicadas como HTML, CSS e JavaScript. Isso reduz custo, remove servidor da equação e melhora o tempo de resposta.",
+      "Next.js 16 em modo standalone, PostgreSQL com Drizzle, autenticação Better Auth, validação de ambiente com Zod, Biome, SEO e uma área autenticada de exemplo.",
   },
   {
-    question: "Como funciona o formulário de contato sem backend?",
+    question: "Como a autenticação protege o painel?",
     answer:
-      "O site usa uma Function do Cloudflare para receber o formulário, validar o Turnstile e enviar o e-mail pelo Resend. Nenhuma chave secreta fica exposta no navegador.",
+      "O painel valida a sessão no servidor com auth.api.getSession antes de renderizar. Rotas de API e Server Actions também devem validar a sessão individualmente.",
   },
   {
-    question: "O site pode aparecer em buscas com IA?",
+    question: "O sistema pode aparecer em buscas com IA?",
     answer:
-      "A base inclui HTML semântico, dados estruturados, sitemap, robots e llms.txt. Isso melhora a descoberta e a leitura, mas a citação por ferramentas de IA não é garantida.",
+      "As páginas públicas incluem HTML semântico, dados estruturados, sitemap, robots e llms.txt. Áreas autenticadas ficam fora do índice. A citação por ferramentas de IA não é garantida.",
   },
   {
-    question: "Dá para adicionar páginas, blog e novos componentes?",
+    question: "Onde este perfil deve ser publicado?",
     answer:
-      "Sim. A estrutura usa o App Router e componentes shadcn com Base UI. Novos componentes e páginas podem ser adicionados sem mudar a fundação.",
+      "Em uma VPS com Node.js 24, PostgreSQL e um proxy reverso com HTTPS. O build standalone e o Dockerfile reduzem o que precisa ser copiado para produção.",
   },
 ];
 
@@ -126,14 +126,14 @@ export default function Home() {
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur">
               <Sparkles className="size-3.5" aria-hidden="true" />
-              Base pronta para sites profissionais
+              Base pronta para sistemas profissionais
             </span>
             <h1 className="mt-6 max-w-3xl text-balance text-5xl font-semibold leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
-              Seu próximo site começa com uma base feita para performance.
+              Seu próximo sistema começa com uma base segura.
             </h1>
             <p className="mt-6 max-w-xl text-pretty text-lg leading-8 text-muted-foreground">
-              Uma landing page estática, acessível e preparada para SEO e IA. Sem dependências
-              desnecessárias, com o essencial para publicar e crescer.
+              Next.js, PostgreSQL, autenticação e validação de ambiente no mesmo lugar. Uma base
+              enxuta para construir, medir e evoluir.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
@@ -157,12 +157,12 @@ export default function Home() {
                 <dd className="mt-1 text-2xl font-semibold tracking-tight">95+</dd>
               </div>
               <div>
-                <dt className="text-xs text-muted-foreground">Backend no site</dt>
-                <dd className="mt-1 text-2xl font-semibold tracking-tight">Zero</dd>
+                <dt className="text-xs text-muted-foreground">Banco de dados</dt>
+                <dd className="mt-1 text-2xl font-semibold tracking-tight">Postgres</dd>
               </div>
               <div>
-                <dt className="text-xs text-muted-foreground">Páginas estáticas</dt>
-                <dd className="mt-1 text-2xl font-semibold tracking-tight">SSG</dd>
+                <dt className="text-xs text-muted-foreground">Deploy</dt>
+                <dd className="mt-1 text-2xl font-semibold tracking-tight">VPS</dd>
               </div>
             </dl>
           </div>
@@ -177,7 +177,7 @@ export default function Home() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="font-heading text-base font-medium leading-snug">
-                      Diagnóstico do site
+                      Diagnóstico da aplicação
                     </h2>
                     <p className="text-sm text-muted-foreground">Última verificação</p>
                   </div>
@@ -266,8 +266,8 @@ export default function Home() {
               "Acessibilidade por padrão",
               "Dados estruturados",
               "llms.txt",
-              "Cloudflare Turnstile",
-              "Zero banco de dados",
+              "Drizzle ORM",
+              "Sessão no servidor",
             ].map((item) => (
               <li key={item} className="flex items-center gap-2">
                 <Check className="size-4 text-foreground" aria-hidden="true" />
@@ -288,12 +288,12 @@ export default function Home() {
               Menos etapas. Mais clareza.
             </h2>
             <p className="mt-4 max-w-md text-pretty leading-7 text-muted-foreground">
-              Uma base enxuta deixa o trabalho concentrado no que o visitante vê e no que o negócio
+              Uma base enxuta deixa o trabalho concentrado no domínio e nas decisões que o negócio
               precisa.
             </p>
             <div className="mt-8 inline-flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
               <Zap className="size-4" aria-hidden="true" />
-              Do primeiro commit ao deploy em minutos
+              Build standalone pronto para a VPS
             </div>
           </div>
           <ol className="divide-y divide-border border-y border-border">

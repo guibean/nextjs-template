@@ -37,13 +37,21 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <Link
-          href="/#contato"
-          className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-foreground px-3.5 text-sm font-medium text-background transition-colors hover:bg-foreground/85 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-        >
-          Falar sobre um projeto
-          <ArrowUpRight className="size-4" aria-hidden="true" />
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/entrar"
+            className="hidden h-9 items-center rounded-lg px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:inline-flex"
+          >
+            Entrar
+          </Link>
+          <Link
+            href="/#contato"
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-foreground px-3.5 text-sm font-medium text-background transition-colors hover:bg-foreground/85 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            Falar sobre um projeto
+            <ArrowUpRight className="size-4" aria-hidden="true" />
+          </Link>
+        </div>
       </div>
     </header>
   );

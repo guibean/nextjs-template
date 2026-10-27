@@ -1,6 +1,6 @@
 ---
 name: Site Estático Next.js
-description: Cria e evolui landing pages, sites institucionais, portfólios e blogs com o template guibean/nextjs-template. Use quando o pedido não exigir login, banco de dados ou back-end próprio. Inclui SEO, sitemap, llms.txt, imagens otimizadas e componentes shadcn com Base UI.
+description: Cria e evolui landing pages, sites institucionais, portfólios e blogs com o perfil de site estático do template guibean/nextjs-template. Use quando o pedido não exigir login, banco de dados ou back-end próprio. Esta branch full stack deve encaminhar esses pedidos para o outro perfil.
 ---
 
 # Site Estático Next.js
@@ -14,16 +14,10 @@ Use para landing page, site institucional, página de campanha, portfólio ou bl
 ## Criar um projeto
 
 1. Confirme nome, domínio final, objetivo da página e se existe formulário de contato.
-2. Crie a partir do template. Se o repositório estiver marcado como template no GitHub:
+2. Use a branch de site estático:
 
 ```bash
-gh repo create <slug> --template guibean/nextjs-template --private --clone
-```
-
-Se não estiver:
-
-```bash
-git clone https://github.com/guibean/nextjs-template.git <slug>
+git clone --branch plano/perfil-site-estatico https://github.com/guibean/nextjs-template.git <slug>
 cd <slug>
 git remote remove origin
 git remote add origin https://github.com/guibean/<slug>.git

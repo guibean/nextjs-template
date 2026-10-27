@@ -1,157 +1,190 @@
-# Template de Site Estático
+# Template Full Stack
 
-Template Next.js 16 para landing pages e sites institucionais, com foco em performance, SEO técnico, acessibilidade e leitura por agentes de IA.
+Template Next.js 16 para sistemas completos, com autenticação, PostgreSQL, SEO e uma base pronta para agentes de IA.
 
-- **Somente front-end**, exportado como HTML/CSS/JS
-- **Next.js 16** com App Router e `output: "export"`
-- **Tailwind CSS 4** e **shadcn/ui com Base UI**
-- **Biome** para lint e formatação
-- **Cloudflare Pages** para hospedagem
-- **Turnstile + Resend** para formulário de contato
-- Skills locais para OpenCode em `.opencode/skills/`
+- Next.js 16 com App Router e `output: "standalone"`
+- React 19 e TypeScript
+- Tailwind CSS 4 e shadcn/ui com **Base UI**
+- PostgreSQL + Drizzle ORM
+- Better Auth com e-mail e senha
+- Zod 4 e `@t3-oss/env-nextjs`
+- Biome + Lighthouse CI
+- Dockerfile para VPS
 
-> Este repositório não inclui banco de dados, autenticação ou back-end persistente. Para sistemas completos, use o perfil full stack.
+> Este é o perfil **full stack**. Para landing pages e sites institucionais sem backend, use o perfil de site estático.
 
 ## Requisitos
 
 - Node.js 24 LTS
 - pnpm 12 (`corepack enable`)
+- PostgreSQL 16+
 
 ## Começar
 
 ```bash
 pnpm install
-cp .env.example .env.local
+cp .env.example .env
+pnpm db:migrate
 pnpm dev
 ```
 
-Abra <http://localhost:3000>.
+Gere um segredo forte para `BETTER_AUTH_SECRET`:
 
-## Configuração
+```bash
+openssl rand -base64 48
+```
 
-Preencha `.env.local`:
+## Variáveis
 
-| Variável                         | Uso                                                                        |
-| -------------------------------- | -------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL`           | Domínio final com HTTPS, sem barra no fim. Define canonical, sitemap e OG. |
-| `NEXT_PUBLIC_SITE_NAME`          | Nome exibido no site e nos metadados.                                      |
-| `NEXT_PUBLIC_SITE_AUTHOR`        | Autor/publisher.                                                           |
-| `NEXT_PUBLIC_CONTACT_EMAIL`      | E-mail exibido no site e na política de privacidade.                       |
-| `NEXT_PUBLIC_CONTACT_ENDPOINT`   | Padrão `/api/contact`; mantenha salvo se usar outra URL.                   |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Chave pública do widget Turnstile. Sem ela, o formulário fica desativado.  |
-| `TURNSTILE_SECRET_KEY`           | Secret do Cloudflare Pages Function. Nunca use `NEXT_PUBLIC_`.             |
-| `TURNSTILE_HOSTNAME`             | Hostname permitido no Turnstile, por exemplo `seudominio.com`.             |
-| `RESEND_API_KEY`                 | Chave de envio do Resend.                                                  |
-| `CONTACT_FROM_EMAIL`             | Remetente em domínio verificado no Resend.                                 |
-| `CONTACT_TO_EMAIL`               | Caixa que recebe os contatos.                                              |
-| `CONTACT_ALLOWED_ORIGIN`         | Origem permitida no POST, por exemplo `https://seudominio.com`.            |
+| Variável                         | Uso                                                        |
+| -------------------------------- | ---------------------------------------------------------- |
+| `DATABASE_URL`                   | Conexão PostgreSQL.                                        |
+| `BETTER_AUTH_SECRET`             | Segredo de assinatura de sessão, mínimo 32 caracteres.     |
+| `BETTER_AUTH_URL`                | URL pública do app, por exemplo `https://app.exemplo.com`. |
+| `NEXT_PUBLIC_APP_URL`            | Mesma URL pública, usada em canonical e links.             |
+| `NEXT_PUBLIC_SITE_NAME`          | Nome exibido.                                              |
+| `NEXT_PUBLIC_SITE_AUTHOR`        | Autor/publisher.                                           |
+| `NEXT_PUBLIC_CONTACT_EMAIL`      | E-mail público.                                            |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Chave pública do Turnstile.                                |
+| `TURNSTILE_SECRET_KEY`           | Secret do Turnstile.                                       |
+| `TURNSTILE_HOSTNAME`             | Hostname permitido.                                        |
+| `RESEND_API_KEY`                 | Chave do Resend.                                           |
+| `CONTACT_FROM_EMAIL`             | Remetente verificado no Resend.                            |
+| `CONTACT_TO_EMAIL`               | Caixa que recebe contatos.                                 |
+| `CONTACT_ALLOWED_ORIGIN`         | Origem permitida no POST.                                  |
 
-Troque também o conteúdo de exemplo em `src/app/page.tsx` e os dados de `src/lib/site.ts`.
+O build valida o ambiente. Em CI, `SKIP_ENV_VALIDATION=1` usa valores de build sem conectar ao banco.
+
+## Banco e migrations
+
+O schema de autenticação fica em `src/db/schema.ts` e foi gerado pelo Better Auth.
+
+```bash
+pnpm auth:generate   # regenera o schema após adicionar plugins
+pnpm db:generate     # cria migration SQL
+pnpm db:migrate      # aplica migrations
+pnpm db:studio       # abre o Drizzle Studio
+```
+
+Nunca edite migrations já aplicadas. Crie uma nova.
+
+## Autenticação
+
+- `/criar-conta`: cadastro
+- `/entrar`: login
+- `/painel`: área autenticada, protegida no servidor por `auth.api.getSession`
+- `/api/auth/[...all]`: handler do Better Auth
+
+O template usa verificação de e-mail desativada para facilitar o primeiro uso. Em produção, configure envio de e-mail, ative `requireEmailVerification`, adicione rate limit e recuperação de senha.
+
+## Formulário de contato
+
+O endpoint `src/app/api/contact/route.ts`:
+
+1. valida origem e tamanho
+2. valida campos e consentimento
+3. verifica Turnstile no servidor
+4. envia pelo Resend com `reply_to` e `Idempotency-Key`
+
+Sem as variáveis do Resend/Turnstile, o endpoint responde `503` e o formulário fica desativado no cliente.
 
 ## Scripts
 
 ```bash
-pnpm dev        # desenvolvimento
-pnpm images     # gera AVIF e WebP em public/images
-pnpm build      # gera o export estático em out/
-pnpm start      # serve o build localmente
-pnpm typecheck  # TypeScript
-pnpm lint       # Biome
-pnpm lint:fix   # Biome com correções
-pnpm format     # formatação
+pnpm dev
+pnpm build
+pnpm start
+pnpm typecheck
+pnpm lint
+pnpm lint:fix
+pnpm images
 ```
 
-`pnpm build` roda `pnpm images` antes do Next.
+## Deploy na VPS
 
-## Imagens
+### Build standalone
 
-1. Coloque os originais em `assets/images/`.
-2. Rode `pnpm images`.
-3. Use os arquivos gerados em `public/images/` com `next/image`:
-
-```tsx
-import Image from "next/image";
-
-<Image
-  src="/images/hero-1600.avif"
-  alt="Descrição objetiva"
-  width={1600}
-  height={900}
-  sizes="(max-width: 768px) 100vw, 50vw"
-  loading="eager"
-  fetchPriority="high"
-/>;
+```bash
+pnpm install --frozen-lockfile
+pnpm db:migrate
+pnpm build
+cp -r public .next/standalone/public
+cp -r .next/static .next/standalone/.next/static
+NODE_ENV=production node .next/standalone/server.js
 ```
 
-Como o export estático não tem o otimizador do Next, `images.unoptimized` fica ativo. Use `preload`/`fetchPriority` apenas na imagem do LCP. Não habilite `dangerouslyAllowSVG`.
+Use systemd, PM2 ou Docker para manter o processo ativo. Coloque Nginx, Caddy ou Cloudflare na frente com HTTPS.
 
-## Formulário de contato
+### Docker
 
-O fluxo é:
-
-```text
- navegador → /api/contact (Pages Function)
-             → valida campos e origem
-             → valida Turnstile no servidor
-             → envia pelo Resend
+```bash
+docker build -t meu-sistema .
+docker run --env-file .env -p 3000:3000 meu-sistema
 ```
 
-1. Crie um domínio verificado no Resend e configure SPF, DKIM e DMARC.
-2. Crie um widget Turnstile para o domínio.
-3. No Cloudflare Pages, adicione as variáveis e secrets listadas acima.
-4. Faça o deploy. Functions em `functions/api/contact.ts` são detectadas automaticamente.
-
-O site não guarda mensagens em banco. O e-mail é o registro. O `Idempotency-Key` evita envio duplicado em retentativas.
-
-Para testar localmente com Functions, use `wrangler pages dev out` após o build e configure `.dev.vars`.
-
-## Deploy no Cloudflare Pages
-
-| Configuração           | Valor                        |
-| ---------------------- | ---------------------------- |
-| Framework preset       | Next.js (Static HTML Export) |
-| Build command          | `pnpm build`                 |
-| Build output directory | `out`                        |
-| Node version           | 24                           |
-
-O arquivo `public/_headers` adiciona headers de segurança e cache. HSTS exige HTTPS e deve ser ativado apenas no domínio final.
+O Dockerfile usa o output standalone e roda como usuário sem privilégios. Aplique migrations antes de subir a nova versão.
 
 ## SEO e IA
 
-- `src/lib/metadata.ts`: metadata, canonical, Open Graph e Twitter
-- `src/app/sitemap.ts`: sitemap
-- `src/app/robots.ts`: regras para buscadores e bots de IA
-- `src/app/opengraph-image.tsx`: imagem OG gerada no build
-- `src/app/llms.txt/route.ts`: resumo para agentes
-- `src/components/json-ld.tsx`: JSON-LD tipado com `schema-dts`
-- `src/app/manifest.ts`: manifest e ícone
+- metadata, canonical, Open Graph e Twitter
+- sitemap, robots e manifest
+- JSON-LD
+- `llms.txt`
+- áreas autenticadas com `noindex` e bloqueadas no `robots.ts`
 
-Toda página nova precisa de `createMetadata`, entrada no sitemap e um único `h1`.
+## Componentes
 
-## shadcn/ui, Base UI e Aceternity
-
-O projeto usa **Base UI** desde a inicialização. Componentes já instalados:
-
-`button`, `card`, `input`, `label`, `textarea`.
-
-Adicione apenas quando necessário:
+Componentes Base UI instalados: button, card, input, label e textarea. Adicione sob demanda:
 
 ```bash
 pnpm exec shadcn add dialog
 pnpm exec shadcn add @aceternity/spotlight
 ```
 
-O registry `@aceternity` já está em `components.json`. Componentes Aceternity usam `motion` e devem ser revisados quanto a licença, peso e acessibilidade.
+O registry `@aceternity` já está configurado em `components.json`.
 
-## Para agentes
+## Agentes de IA
 
-- `AGENTS.md`: regra de decisão entre site e sistema, comandos e restrições.
-- `.opencode/skills/site-estatico/`: fluxo para criar e evoluir sites.
-- `.opencode/skills/sistema-fullstack/`: encaminha pedidos com back-end.
-- `components.json`: contexto de componentes e registry.
+- `AGENTS.md`: regra de decisão, stack e restrições.
+- `opencode.json`: MCP oficial do shadcn para buscar e instalar componentes.
+- `.agents/skills/shadcn/`: skill oficial do shadcn.
+- `.opencode/skills/sistema-fullstack/`: fluxo deste perfil.
+- `.opencode/skills/site-estatico/`: encaminha sites para o perfil estático.
 
-## Qualidade
+Para usar as skills em qualquer projeto, copie-as para o diretório global:
 
-- CI em `.github/workflows/ci.yml`: lint, typecheck, build e Lighthouse
-- Meta Lighthouse: 95+ em performance, acessibilidade, boas práticas e SEO
-- Dependabot semanal, incluindo majors
+```powershell
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.config\opencode\skills" | Out-Null
+Copy-Item -Recurse .opencode\skills\* "$env:USERPROFILE\.config\opencode\skills\"
+```
+
+Depois chame com `@sistema-fullstack` ou `@site-estatico`. Mantenha `AGENTS.md` no projeto para que a decisão de perfil viaje com o código.
+
+## Estrutura
+
+```text
+src/
+  app/
+    (público) page, privacidade
+    entrar/, criar-conta/, painel/
+    api/auth/[...all]/route.ts
+    api/contact/route.ts
+  db/
+    index.ts
+    schema.ts
+  lib/
+    auth.ts, auth-client.ts
+  env.ts
+drizzle/
+functions removidas: este perfil usa Route Handlers do Next
+```
+
+## Antes de produção
+
+- Ativar verificação de e-mail no Better Auth.
+- Configurar backup do PostgreSQL.
+- Configurar rate limit no login e no contato.
+- Revisar logs, observabilidade e alertas.
+- Revisar a política de privacidade.
+- Rodar `pnpm lint`, `pnpm typecheck`, `pnpm build` e Lighthouse.
+- Fazer deploy apenas com HTTPS e secrets fora do Git.

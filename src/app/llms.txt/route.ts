@@ -1,15 +1,13 @@
 import { siteConfig } from "@/lib/site";
 
-export const dynamic = "force-static";
-
 export function GET() {
   const content = `# ${siteConfig.name}
 
 > ${siteConfig.description}
 
-${siteConfig.name} é um site estático em português, construído com Next.js. O conteúdo principal está nesta página inicial e na política de privacidade.
+${siteConfig.name} é uma aplicação full stack em português, construída com Next.js e PostgreSQL. O conteúdo público está na página inicial e na política de privacidade. A área autenticada não é indexada.
 
-## Páginas
+## Páginas públicas
 
 - [Início](${siteConfig.url}/): apresentação, recursos, processo, perguntas frequentes e contato.
 - [Privacidade](${siteConfig.url}/privacidade): como os dados do formulário são tratados.

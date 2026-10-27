@@ -1,67 +1,80 @@
 # AGENTS.md
 
-Este repositório é o **perfil Site Estático**. O objetivo é landing page, site institucional, portfólio ou blog, somente front-end, publicado como arquivos estáticos.
+Este repositório é o **perfil Full Stack**. O objetivo é um sistema com autenticação, banco de dados e deploy em VPS.
 
 ## Regra de perfil
 
 Antes de instalar qualquer coisa, classifique o pedido:
 
-- **Site estático:** landing page, site institucional, portfólio, blog, página de campanha. Use este repositório. Não adicione banco, ORM, autenticação, Server Actions persistentes ou dependências de back-end.
-- **Sistema full stack:** login, cadastro, painel, banco, dados por usuário, upload, cobrança ou API própria. Pare e use o perfil full stack. Não transforme este template em full stack.
-- **Dúvida:** pergunte antes de instalar. Um formulário de contato via Cloudflare Function e Resend não torna o projeto full stack.
+- **Sistema full stack:** login, cadastro, painel, banco, dados por usuário, upload, cobrança ou API própria. Use esta branch.
+- **Site estático:** landing page, site institucional, portfólio ou blog somente front-end. Use o perfil de site estático; não adicione Drizzle, auth ou banco aqui.
+- **Dúvida:** pergunte antes de instalar.
 
 ## Stack
 
-- Next.js 16 com App Router e `output: "export"`
+- Next.js 16 com App Router e `output: "standalone"`
 - React 19
 - TypeScript 5.9
 - Tailwind CSS 4
 - shadcn/ui com **Base UI**
-- Aceternity UI como registry opcional de blocos animados
-- Biome para lint e formatação
+- PostgreSQL + Drizzle ORM
+- Better Auth
+- Zod 4 + `@t3-oss/env-nextjs`
+- Biome
 - pnpm 12 e Node 24 LTS
 
 ## Comandos
 
 ```bash
 pnpm dev
-pnpm images
+pnpm db:generate
+pnpm db:migrate
+pnpm db:studio
+pnpm auth:generate
 pnpm build
 pnpm typecheck
 pnpm lint
-pnpm lint:fix
+pnpm images
 pnpm exec shadcn add <componente>
 pnpm exec shadcn add @aceternity/<componente>
 ```
 
-## Regras de implementação
+## Regras
 
-1. Não instale componentes shadcn preventivamente. Use `components.json` e o CLI. Componentes já presentes: button, card, input, label e textarea.
-2. Prefira componentes nativos e HTML semântico. Use `motion` apenas quando um bloco Aceternity exigir.
-3. Preserve `src/lib/site.ts`, `src/lib/metadata.ts`, `sitemap.ts`, `robots.ts`, `opengraph-image.tsx`, `manifest.ts` e `llms.txt`. Toda página deve ter título, descrição, canonical e um único `h1`.
-4. Toda imagem raster entra em `assets/images/` e é processada por `pnpm images`. Use `next/image` com `sizes`; `priority` está depreciado no Next 16, use `preload` apenas no LCP.
-5. Não habilite `dangerouslyAllowSVG` nem o otimizador padrão de imagens no export estático.
-6. Conteúdo deve ser renderizado no HTML sempre que possível. Evite depender de JavaScript para texto principal.
-7. Não adicione analytics com cookies sem atualizar a política de privacidade e prever consentimento.
-8. Segredos ficam apenas em variáveis do Cloudflare. Nunca use `NEXT_PUBLIC_` para chaves privadas.
-9. O formulário usa Turnstile, validação dupla e Resend. Não troque por `mailto:` silencioso ou API key no cliente.
-10. Antes de concluir: `pnpm lint`, `pnpm typecheck` e `pnpm build` precisam passar.
+1. Todo segredo fica no servidor. Nunca use `NEXT_PUBLIC_` para chave privada.
+2. Toda entrada é validada no servidor. Validação no cliente é apenas UX.
+3. Toda página protegida valida a sessão com `auth.api.getSession`.
+4. Toda rota de API protegida valida a sessão individualmente.
+5. Toda alteração de schema gera uma migration. Não edite migrations aplicadas.
+6. Não use `output: "export"` neste perfil.
+7. Não instale dependências de UI ou banco sem necessidade concreta.
+8. Componentes shadcn entram sob demanda. Já existem button, card, input, label e textarea.
+9. Preserve SEO nas páginas públicas: metadata, canonical, sitemap, robots, Open Graph, JSON-LD e `llms.txt`.
+10. Áreas autenticadas devem ter `noindex`, `Cache-Control: private` e não entrar no sitemap.
+11. Antes de concluir: `pnpm lint`, `pnpm typecheck` e `pnpm build`. Se houver banco, rode migrations e teste login/painel.
+12. A branch de site estático nunca deve receber dependências de back-end.
 
-## SEO e IA
+## Segurança de produção
 
-- `NEXT_PUBLIC_SITE_URL` deve ser o domínio final, com HTTPS e sem barra final.
-- Atualize `siteConfig` e o conteúdo de exemplo.
-- Sitemap e robots são gerados no build. `llms.txt` é uma rota estática.
-- FAQs visíveis devem ter JSON-LD correspondente.
-- Não prometa citação por IA. `llms.txt` é convenção emergente, não padrão garantido.
+- Ativar verificação de e-mail no Better Auth.
+- Adicionar rate limit em login, cadastro e contato.
+- Configurar backup e retenção do PostgreSQL.
+- Usar HTTPS, HSTS e proxy reverso.
+- Revisar logs para não vazar dados sensíveis.
+- Configurar rotação de segredo de sessão e das chaves Resend/Turnstile.
 
 ## Deploy
 
-- Site estático: Cloudflare Pages, build `pnpm build`, diretório `out`.
-- Functions em `functions/api/contact.ts` são detectadas pelo Cloudflare Pages.
-- Configure os secrets no painel do Cloudflare, não no repositório.
+- GitHub para código e CI.
+- VPS com Node.js 24, PostgreSQL e processo gerenciado.
+- Build `pnpm build`, output `.next/standalone`.
+- Dockerfile disponível na raiz.
+- Migrations devem ser aplicadas antes de subir a nova versão.
 
-## Skills do projeto
+## Skills e MCP
 
-- `.opencode/skills/site-estatico/SKILL.md`: criar e evoluir sites neste perfil.
-- `.opencode/skills/sistema-fullstack/SKILL.md`: encaminhar pedidos que exigem back-end.
+- `.opencode/skills/sistema-fullstack/SKILL.md`: fluxo deste perfil.
+- `.opencode/skills/site-estatico/SKILL.md`: encaminha pedidos de site para o perfil estático.
+- `.agents/skills/shadcn/SKILL.md`: skill oficial do shadcn, instalada localmente.
+- `opencode.json`: MCP do shadcn. Use antes de escrever um componente novo.
+- Instale o MCP e a skill em outros projetos com `pnpm exec shadcn mcp init --client opencode` e `pnpm dlx skills add shadcn/ui --agent opencode -y`.

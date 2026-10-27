@@ -1,9 +1,10 @@
 module.exports = {
   ci: {
     collect: {
-      staticDistDir: "./out",
-      url: ["http://localhost/", "http://localhost/privacidade/"],
+      url: ["http://localhost:3100/"],
       numberOfRuns: 1,
+      startServerCommand: "pnpm start:next -p 3100",
+      startServerReadyPattern: "Ready in",
       settings: {
         preset: "desktop",
       },

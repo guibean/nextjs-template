@@ -1,16 +1,4 @@
-type Env = {
-  TURNSTILE_SECRET_KEY: string;
-  RESEND_API_KEY: string;
-  CONTACT_TO_EMAIL: string;
-  CONTACT_FROM_EMAIL: string;
-  TURNSTILE_HOSTNAME?: string;
-  CONTACT_ALLOWED_ORIGIN?: string;
-};
-
-type PagesContext = {
-  request: Request;
-  env: Env;
-};
+import { env } from "@/env";
 
 type ContactPayload = {
   name?: unknown;
@@ -20,6 +8,8 @@ type ContactPayload = {
   company?: unknown;
   turnstileToken?: unknown;
 };
+
+export const runtime = "nodejs";
 
 const json = (body: unknown, status = 200) =>
   Response.json(body, {
@@ -36,7 +26,7 @@ const isText = (value: unknown, min: number, max: number) =>
 const isEmail = (value: unknown) =>
   typeof value === "string" && value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-export const onRequestPost = async ({ request, env }: PagesContext) => {
+export async function POST(request: Request) {
   const requestOrigin = new URL(request.url).origin;
   const origin = request.headers.get("Origin");
   const expectedOrigin = env.CONTACT_ALLOWED_ORIGIN ?? requestOrigin;
@@ -54,6 +44,15 @@ export const onRequestPost = async ({ request, env }: PagesContext) => {
     return json({ ok: false, error: "Conteúdo muito grande." }, 413);
   }
 
+  if (
+    !env.TURNSTILE_SECRET_KEY ||
+    !env.RESEND_API_KEY ||
+    !env.CONTACT_FROM_EMAIL ||
+    !env.CONTACT_TO_EMAIL
+  ) {
+    return json({ ok: false, error: "Formulário não configurado." }, 503);
+  }
+
   let payload: ContactPayload;
   try {
     payload = (await request.json()) as ContactPayload;
@@ -61,7 +60,6 @@ export const onRequestPost = async ({ request, env }: PagesContext) => {
     return json({ ok: false, error: "JSON inválido." }, 400);
   }
 
-  // Campo armadilha: bots recebem sucesso falso e não geram e-mail.
   if (typeof payload.company === "string" && payload.company.length > 0) {
     return json({ ok: true });
   }
@@ -82,11 +80,9 @@ export const onRequestPost = async ({ request, env }: PagesContext) => {
     return json({ ok: false, error: "Verificação ausente." }, 400);
   }
 
-  const turnstileToken = String(payload.turnstileToken);
   const turnstileBody = new FormData();
   turnstileBody.set("secret", env.TURNSTILE_SECRET_KEY);
-  turnstileBody.set("response", turnstileToken);
-  turnstileBody.set("remoteip", request.headers.get("CF-Connecting-IP") ?? "");
+  turnstileBody.set("response", String(payload.turnstileToken));
 
   const turnstileResponse = await fetch(
     "https://challenges.cloudflare.com/turnstile/v0/siteverify",
@@ -128,7 +124,7 @@ export const onRequestPost = async ({ request, env }: PagesContext) => {
       Authorization: `Bearer ${env.RESEND_API_KEY}`,
       "Content-Type": "application/json",
       "Idempotency-Key": safeIdempotencyKey,
-      "User-Agent": "site-estatico-contact/1.0",
+      "User-Agent": "sistema-fullstack-contact/1.0",
     },
     body: JSON.stringify({
       from: env.CONTACT_FROM_EMAIL,
@@ -146,4 +142,4 @@ export const onRequestPost = async ({ request, env }: PagesContext) => {
   }
 
   return json({ ok: true });
-};
+}

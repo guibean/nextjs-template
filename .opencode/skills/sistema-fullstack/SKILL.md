@@ -1,40 +1,66 @@
 ---
 name: Sistema Full Stack Next.js
-description: Use quando o pedido exigir login, cadastro, banco de dados, painel, cobrança, upload ou API própria. Encaminha para o perfil full stack e impede que dependências de back-end sejam instaladas no template de site estático.
+description: Cria e evolui sistemas com login, banco de dados, painel ou API própria no template guibean/nextjs-template, branch perfil/sistema-fullstack. Usa Next.js 16 standalone, PostgreSQL, Drizzle, Better Auth, Zod, Base UI e deploy em VPS.
 ---
 
 # Sistema Full Stack Next.js
 
-## Regra
+## Quando usar
 
-Se o pedido envolver autenticação, banco de dados, dados por usuário, painel administrativo, cobrança, upload ou API própria, **não use o template de site estático**. Use o perfil full stack.
+Use para login, cadastro, painel, dados por usuário, upload, cobrança ou API própria. Para landing pages e sites institucionais, use a skill `site-estatico`.
 
-## Base
+## Criar um projeto
 
-- Next.js 16 com App Router e `output: "standalone"`
-- React 19 e TypeScript
-- Tailwind CSS 4
-- shadcn/ui com Base UI
-- Drizzle ORM + PostgreSQL
-- Better Auth
-- Zod 4
-- `@t3-oss/env-nextjs` para validar variáveis de ambiente
-- Biome
-- Deploy: GitHub + VPS com Node 24 e processo gerenciado
+```bash
+git clone --branch perfil/sistema-fullstack https://github.com/guibean/nextjs-template.git <slug>
+cd <slug>
+pnpm install
+cp .env.example .env
+```
+
+Gere `BETTER_AUTH_SECRET` com `openssl rand -base64 48`, configure `DATABASE_URL` e rode:
+
+```bash
+pnpm db:migrate
+pnpm dev
+```
 
 ## Ordem de implementação
 
-1. Modelar dados e ameaças antes de instalar ORM ou auth.
-2. Configurar `src/env.ts`; o build deve falhar com variável ausente.
-3. Criar schema Drizzle e migrations versionadas.
-4. Configurar Better Auth e proteger rotas no servidor.
-5. Validar toda entrada com Zod no servidor.
-6. Adicionar observabilidade, backup e rate limit.
-7. Só então construir UI de painel.
+1. Modele dados, relações, permissões e ameaças.
+2. Altere `src/db/schema.ts` e rode `pnpm db:generate`.
+3. Aplique migrations com `pnpm db:migrate`.
+4. Configure env em `src/env.ts`; não use fallback fora de `SKIP_ENV_VALIDATION`.
+5. Implemente autenticação e autorização no servidor.
+6. Valide toda entrada com Zod no servidor.
+7. Adicione rate limit, logs, backup e observabilidade.
+8. Só então construa a UI do painel.
 
-## Proibições
+## Regras de segurança
 
-- Não expor segredo em `NEXT_PUBLIC_*`.
-- Não confiar em validação do cliente.
-- Não usar `output: "export"` quando houver autenticação ou banco.
-- Não compartilhar o mesmo template do perfil estático se isso levar dependências de back-end para landing pages.
+- Nunca exponha `DATABASE_URL`, `BETTER_AUTH_SECRET`, `RESEND_API_KEY` ou `TURNSTILE_SECRET_KEY`.
+- Use `auth.api.getSession({ headers: await headers() })` em Server Components protegidos.
+- Proteja também Route Handlers e Server Actions.
+- Não confie em validação do cliente.
+- Não use `output: "export"` quando houver auth, banco ou mutações.
+- Em produção, ative verificação de e-mail, rate limit e recuperação de senha.
+
+## Deploy na VPS
+
+- Build com `pnpm build` e output `.next/standalone`.
+- Dockerfile multi-stage incluso.
+- Aplique migrations antes de trocar a versão.
+- Use HTTPS, proxy reverso e processo gerenciado.
+- Faça backup do PostgreSQL antes de migrations destrutivas.
+
+## Checklist
+
+- [ ] env validado
+- [ ] migrations aplicadas
+- [ ] login, logout e sessão testados
+- [ ] rota protegida redireciona sem sessão
+- [ ] API protegida rejeita sem sessão
+- [ ] formulário com validação dupla
+- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm build`
+- [ ] Lighthouse ≥ 95 nas páginas públicas
+- [ ] backups e rate limit definidos

@@ -1,15 +1,15 @@
-const rawUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com";
+import { env } from "@/env";
 
 export const siteConfig = {
-  name: process.env.NEXT_PUBLIC_SITE_NAME ?? "Nexo",
-  tagline: "Sites rápidos, acessíveis e prontos para IA",
+  name: env.NEXT_PUBLIC_SITE_NAME,
+  tagline: "Sistemas rápidos, seguros e prontos para crescer",
   description:
-    "Template Next.js para sites estáticos com SEO técnico, performance e uma base pronta para agentes de IA.",
-  url: rawUrl.replace(/\/+$/, ""),
+    "Template Next.js full stack com autenticação, PostgreSQL, SEO técnico e uma base pronta para agentes de IA.",
+  url: env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, ""),
   locale: "pt_BR",
   lang: "pt-BR",
-  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "contato@example.com",
-  author: process.env.NEXT_PUBLIC_SITE_AUTHOR ?? "Nexo",
+  email: env.NEXT_PUBLIC_CONTACT_EMAIL,
+  author: env.NEXT_PUBLIC_SITE_AUTHOR,
 } as const;
 
 export function absoluteUrl(path = "/") {
