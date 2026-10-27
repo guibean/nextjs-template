@@ -1,13 +1,17 @@
 ---
 name: Sistema Full Stack Next.js
-description: Use quando o pedido exigir login, cadastro, banco de dados, painel, cobrança, upload ou API própria. Encaminha para o perfil full stack e impede que dependências de back-end sejam instaladas no template de site estático.
+description: Use quando o pedido exigir login, cadastro, banco de dados, painel, cobrança, upload ou API própria. Encaminha para guibean/nextjs-fullstack-template e impede que dependências de back-end sejam instaladas no template de site estático.
 ---
 
 # Sistema Full Stack Next.js
 
 ## Regra
 
-Se o pedido envolver autenticação, banco de dados, dados por usuário, painel administrativo, cobrança, upload ou API própria, **não use o template de site estático**. Use o perfil full stack.
+Se o pedido envolver autenticação, banco de dados, dados por usuário, painel administrativo, cobrança, upload ou API própria, **não use o template de site estático**. Use o repositório full stack:
+
+```bash
+gh repo create <slug> --template guibean/nextjs-fullstack-template --private --clone
+```
 
 ## Base
 

@@ -10,7 +10,17 @@ Template Next.js 16 para landing pages e sites institucionais, com foco em perfo
 - **Turnstile + Resend** para formulário de contato
 - Skills locais para OpenCode em `.opencode/skills/`
 
-> Este repositório não inclui banco de dados, autenticação ou back-end persistente. Para sistemas completos, use o perfil full stack.
+> Este repositório não inclui banco de dados, autenticação ou back-end persistente. Para sistemas completos, use [guibean/nextjs-fullstack-template](https://github.com/guibean/nextjs-fullstack-template).
+
+## Repositórios
+
+- **Site:** [guibean/nextjs-template](https://github.com/guibean/nextjs-template)
+- **Sistema:** [guibean/nextjs-fullstack-template](https://github.com/guibean/nextjs-fullstack-template)
+
+```bash
+gh repo create meu-site --template guibean/nextjs-template --private --clone
+gh repo create meu-sistema --template guibean/nextjs-fullstack-template --private --clone
+```
 
 ## Requisitos
 
@@ -149,7 +159,7 @@ O registry `@aceternity` já está em `components.json`. Componentes Aceternity 
 - `opencode.json`: MCP oficial do shadcn para buscar e instalar componentes.
 - `.agents/skills/shadcn/`: skill oficial do shadcn.
 - `.opencode/skills/site-estatico/`: fluxo para criar e evoluir sites.
-- `.opencode/skills/sistema-fullstack/`: encaminha pedidos com back-end.
+- `.opencode/skills/sistema-fullstack/`: encaminha pedidos com back-end para [guibean/nextjs-fullstack-template](https://github.com/guibean/nextjs-fullstack-template).
 - `components.json`: contexto de componentes e registry.
 
 Para usar as skills em qualquer projeto, copie-as para o diretório global:

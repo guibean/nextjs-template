@@ -64,7 +64,7 @@ pnpm exec shadcn add @aceternity/<componente>
 ## Skills e MCP
 
 - `.opencode/skills/site-estatico/SKILL.md`: criar e evoluir sites neste perfil.
-- `.opencode/skills/sistema-fullstack/SKILL.md`: encaminhar pedidos que exigem back-end.
+- `.opencode/skills/sistema-fullstack/SKILL.md`: encaminhar pedidos que exigem back-end para `guibean/nextjs-fullstack-template`.
 - `.agents/skills/shadcn/SKILL.md`: skill oficial do shadcn, instalada localmente.
 - `opencode.json`: MCP do shadcn. Consulte componentes e docs antes de escrever UI nova.
 - Em outro projeto, rode `pnpm exec shadcn mcp init --client opencode` e `pnpm dlx skills add shadcn/ui --agent opencode -y`.

@@ -2,6 +2,11 @@
   "name": "site-estatico",
   "version": "0.2.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guibean/nextjs-template.git"
+  },
+  "homepage": "https://github.com/guibean/nextjs-template#readme",
   "packageManager": "pnpm@12.15.0",
   "engines": {
     "node": ">=24"
