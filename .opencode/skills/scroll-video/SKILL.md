@@ -37,6 +37,8 @@ pnpm add gsap @gsap/react
 
 Não adicione `lenis`, `framer-motion` ou `motion` para este efeito. Só instale Lenis se o usuário pedir **também** scroll suave global, e nesse caso trate como uma decisão separada.
 
+Se `ffmpeg` não estiver disponível, peça ao usuário um MP4 já codificado e o poster. Não instale software de sistema silenciosamente.
+
 ## Implementação
 
 1. Coloque o vídeo e o poster em `public/media/`, ou use uma URL de streaming com CORS.
