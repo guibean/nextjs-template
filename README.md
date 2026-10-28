@@ -153,6 +153,17 @@ pnpm exec shadcn add @aceternity/spotlight
 
 O registry `@aceternity` já está em `components.json`. Componentes Aceternity usam `motion` e devem ser revisados quanto a licença, peso e acessibilidade.
 
+## Vídeo com efeito scroll — opcional
+
+Não faz parte do template padrão e **não instala nada por padrão**. Só use quando o pedido for explícito: “vídeo com efeito scroll”, “hero com vídeo controlado pelo scroll” ou “seção no meio com vídeo scrub”.
+
+- Skill: `.opencode/skills/scroll-video/SKILL.md`
+- Componente de referência: `.opencode/skills/scroll-video/references/scroll-video.tsx.txt`
+- Encoder/poster: `.opencode/skills/scroll-video/references/video-encoding.md`
+- Checklist: `.opencode/skills/scroll-video/references/acceptance.md`
+
+Quando ativado, instala apenas `gsap` e `@gsap/react`. Inclui poster, fallback para `prefers-reduced-motion`, comportamento mobile e vídeo sem áudio/autoplay. O projeto [JeskoJets-ScrollAnimation](https://github.com/Thakuma07/JeskoJets-ScrollAnimation) é referência visual; não tem licença e não deve ter código ou assets copiados.
+
 ## Para agentes
 
 - `AGENTS.md`: regra de decisão entre site e sistema, comandos e restrições.
@@ -160,6 +171,7 @@ O registry `@aceternity` já está em `components.json`. Componentes Aceternity 
 - `.agents/skills/shadcn/`: skill oficial do shadcn.
 - `.opencode/skills/site-estatico/`: fluxo para criar e evoluir sites.
 - `.opencode/skills/sistema-fullstack/`: encaminha pedidos com back-end para [guibean/nextjs-fullstack-template](https://github.com/guibean/nextjs-fullstack-template).
+- `.opencode/skills/scroll-video/`: vídeo com efeito scroll, somente sob pedido explícito.
 - `components.json`: contexto de componentes e registry.
 
 Para usar as skills em qualquer projeto, copie-as para o diretório global:

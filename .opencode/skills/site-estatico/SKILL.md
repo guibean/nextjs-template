@@ -44,6 +44,7 @@ pnpm exec shadcn add @aceternity/spotlight
 ```
 
 - Para blocos Aceternity, verifique a licença e instale `motion` apenas se o componente exigir.
+- Para vídeo com efeito scroll, exija pedido explícito e use a skill `scroll-video`. Não instale GSAP/Lenis fora desse caso.
 - Mantenha um único `h1` por página e a hierarquia de headings.
 - Toda página nova precisa de `createMetadata`, entrada no sitemap e link navegável.
 - Use `next/image` com `sizes` e imagens processadas por `pnpm images`.

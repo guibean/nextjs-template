@@ -47,6 +47,17 @@ pnpm exec shadcn add @aceternity/<componente>
 9. O formulário usa Turnstile, validação dupla e Resend. Não troque por `mailto:` silencioso ou API key no cliente.
 10. Antes de concluir: `pnpm lint`, `pnpm typecheck` e `pnpm build` precisam passar.
 
+## Vídeo com efeito scroll — somente sob pedido explícito
+
+- **Nunca instale `gsap`, `@gsap/react`, `lenis` ou `motion` preventivamente.**
+- Só implemente quando o pedido mencionar explicitamente vídeo com scroll, vídeo que avança ao rolar, scroll video, video scrubbing, hero com vídeo ou seção com vídeo controlado pelo scroll.
+- Um pedido genérico de "site bonito", "animação" ou "parallax" **não** autoriza instalar GSAP.
+- Carregue e siga `.opencode/skills/scroll-video/SKILL.md`. A skill está com autoinvoke desativado justamente para não ser usada por engano.
+- Dependências permitidas para esse efeito: `gsap` + `@gsap/react`. Não adicione Lenis/Framer Motion/Motion sem um segundo pedido explícito.
+- O componente deve ter poster otimizado, `prefers-reduced-motion`, fallback mobile, vídeo mudo/sem controles e nenhum autoplay.
+- O repositório `Thakuma07/JeskoJets-ScrollAnimation` é apenas referência visual. Ele não tem licença e usa imagens em camadas; não copie código, assets ou fontes. Implemente a versão original da skill com vídeo.
+- Se o pedido não for explícito, não crie seção de vídeo nem adicione dependências.
+
 ## SEO e IA
 
 - `NEXT_PUBLIC_SITE_URL` deve ser o domínio final, com HTTPS e sem barra final.
@@ -65,6 +76,7 @@ pnpm exec shadcn add @aceternity/<componente>
 
 - `.opencode/skills/site-estatico/SKILL.md`: criar e evoluir sites neste perfil.
 - `.opencode/skills/sistema-fullstack/SKILL.md`: encaminhar pedidos que exigem back-end para `guibean/nextjs-fullstack-template`.
+- `.opencode/skills/scroll-video/SKILL.md`: vídeo com scroll, somente sob pedido explícito.
 - `.agents/skills/shadcn/SKILL.md`: skill oficial do shadcn, instalada localmente.
 - `opencode.json`: MCP do shadcn. Consulte componentes e docs antes de escrever UI nova.
 - Em outro projeto, rode `pnpm exec shadcn mcp init --client opencode` e `pnpm dlx skills add shadcn/ui --agent opencode -y`.

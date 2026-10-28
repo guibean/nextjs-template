@@ -1,0 +1,191 @@
+"use client";
+
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
+import Image from "next/image";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { cn } from "cn";
+
+gsap.registerPlugin(ScrollTrigger);
+
+type ScrollVideoProps = {
+  src: string;
+  poster: string;
+  title: string;
+  eyebrow?: string;
+  description?: string;
+  headingLevel?: 1 | 2;
+  align?: "left" | "center" | "right";
+  frame?: boolean;
+  priorityPoster?: boolean;
+  preload?: "metadata" | "auto";
+  scrollLength?: string;
+  videoClassName?: string;
+  className?: string;
+};
+
+const alignment = {
+  left: "items-start text-left",
+  center: "items-center text-center",
+  right: "items-end text-right",
+} as const;
+
+export function ScrollVideo({
+  src,
+  poster,
+  title,
+  eyebrow,
+  description,
+  headingLevel = 2,
+  align = "left",
+  frame = false,
+  priorityPoster = false,
+  preload = "metadata",
+  scrollLength = "240vh",
+  videoClassName,
+  className,
+}: ScrollVideoProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const mediaRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const titleId = useId();
+  const [duration, setDuration] = useState(0);
+  const [ready, setReady] = useState(false);
+  const Heading = headingLevel === 1 ? "h1" : "h2";
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const updateDuration = () => {
+      if (Number.isFinite(video.duration) && video.duration > 0) {
+        setDuration(video.duration);
+      }
+    };
+
+    video.pause();
+    video.currentTime = 0;
+    if (video.readyState >= 1) updateDuration();
+    video.addEventListener("loadedmetadata", updateDuration);
+    return () => video.removeEventListener("loadedmetadata", updateDuration);
+  }, []);
+
+  useGSAP(
+    () => {
+      const video = videoRef.current;
+      const media = mediaRef.current;
+      const content = contentRef.current;
+      if (!video || !duration || !sectionRef.current || !media || !content) return;
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduceMotion) {
+        video.currentTime = 0;
+        return;
+      }
+
+      const trigger = {
+        trigger: sectionRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 0.6,
+        invalidateOnRefresh: true,
+      } as const;
+
+      gsap.to(video, {
+        currentTime: duration,
+        ease: "none",
+        scrollTrigger: trigger,
+      });
+
+      gsap.fromTo(media, { scale: 1 }, { scale: 1.06, ease: "none", scrollTrigger: trigger });
+
+      gsap.fromTo(
+        content,
+        { y: 0, opacity: 1 },
+        { y: -56, opacity: 0.3, ease: "none", scrollTrigger: trigger },
+      );
+    },
+    { scope: sectionRef, dependencies: [duration] },
+  );
+
+  return (
+    <section
+      ref={sectionRef}
+      aria-labelledby={titleId}
+      className={cn(
+        "relative h-[var(--scroll-length)] bg-black motion-reduce:h-svh",
+        className,
+      )}
+      style={{ "--scroll-length": scrollLength } as CSSProperties}
+    >
+      <div className="sticky top-0 h-svh overflow-hidden motion-reduce:relative">
+        <div
+          ref={mediaRef}
+          className="absolute inset-0 will-change-transform"
+          aria-hidden="true"
+        >
+          <Image
+            src={poster}
+            alt=""
+            fill
+            sizes="100vw"
+            preload={priorityPoster}
+            className="object-cover"
+          />
+          <video
+            ref={videoRef}
+            src={src}
+            muted
+            playsInline
+            preload={preload}
+            disablePictureInPicture
+            tabIndex={-1}
+            aria-hidden="true"
+            onCanPlay={() => setReady(true)}
+            className={cn(
+              "absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-700",
+              ready && "opacity-100",
+              videoClassName,
+            )}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-black/25" />
+        </div>
+
+        <div
+          className={cn(
+            "relative z-10 flex h-full w-full max-w-6xl flex-col justify-end px-5 pb-16 text-white sm:px-8 sm:pb-20",
+            alignment[align],
+          )}
+        >
+          <div ref={contentRef} className="max-w-3xl">
+            {eyebrow ? (
+              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-white/70">
+                {eyebrow}
+              </p>
+            ) : null}
+            <Heading
+              id={titleId}
+              className="text-balance text-4xl font-semibold leading-[1.02] tracking-[-0.045em] sm:text-6xl lg:text-7xl"
+            >
+              {title}
+            </Heading>
+            {description ? (
+              <p className="mt-5 max-w-xl text-pretty text-base leading-7 text-white/75 sm:text-lg">
+                {description}
+              </p>
+            ) : null}
+          </div>
+        </div>
+
+        {frame ? (
+          <div className="pointer-events-none absolute inset-4 z-20 rounded-[1.75rem] border border-white/25 shadow-[inset_0_0_80px_rgba(0,0,0,0.35)] sm:inset-8">
+            <span className="absolute -top-px left-10 h-px w-20 bg-white/70" />
+            <span className="absolute -bottom-px right-10 h-px w-20 bg-white/70" />
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
